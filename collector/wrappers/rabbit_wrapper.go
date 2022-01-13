@@ -8,7 +8,7 @@ import (
 type RabbitMQWrapper struct {
 	Connection *amqp.Connection
 	Channel    *amqp.Channel
-	Query      string
+	Queue      amqp.Queue
 }
 
 func NewRabbitMQWrapper(url string) *RabbitMQWrapper {
@@ -31,5 +31,20 @@ func NewRabbitMQWrapper(url string) *RabbitMQWrapper {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return &RabbitMQWrapper{conn, ch, q.Name}
+	return &RabbitMQWrapper{conn, ch, q}
+}
+
+func (rmq *RabbitMQWrapper) Send(message string) {
+	err := rmq.Channel.Publish(
+		"",
+		rmq.Queue.Name,
+		false, // mandatory
+		false, // immediate
+		amqp.Publishing{
+			ContentType: "text/plain",
+			Body:        []byte(message),
+		})
+	if err != nil {
+		log.Fatal(err)
+	}
 }

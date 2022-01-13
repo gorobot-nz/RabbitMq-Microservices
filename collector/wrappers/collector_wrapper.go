@@ -1,8 +1,8 @@
 package wrappers
 
 import (
-	"fmt"
 	"github.com/gocolly/colly/v2"
+	log "github.com/sirupsen/logrus"
 )
 
 type CollectorWrapper struct {
@@ -14,7 +14,8 @@ func NewCollectorWrapper(rmq *RabbitMQWrapper) *CollectorWrapper {
 	c := colly.NewCollector()
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
-		fmt.Println(e.Request.AbsoluteURL(link))
+		log.Infof("Find link %s", e.Request.AbsoluteURL(link))
+		rmq.Send(e.Request.AbsoluteURL(link))
 	})
 
 	return &CollectorWrapper{c, rmq}
