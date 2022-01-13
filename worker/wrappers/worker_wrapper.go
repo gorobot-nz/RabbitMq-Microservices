@@ -7,22 +7,23 @@ import (
 
 type WorkerWrapper struct {
 	worker *colly.Collector
+	rmq    *RabbitMQTransmitterWorkerWrapper
 }
 
-func NewWorkerWrapper(rmq *RabbitMQWorkerWrapper) *WorkerWrapper {
-	c := colly.NewCollector()
+func NewWorkerWrapper(rmq *RabbitMQTransmitterWorkerWrapper) *WorkerWrapper {
+	worker := colly.NewCollector()
 
-	c.OnHTML("title", func(e *colly.HTMLElement) {
-		text := e.Text
-		log.Infof("Find info %s", text)
-		rmq.Send(text)
-	})
-
-	return &WorkerWrapper{c}
+	return &WorkerWrapper{worker, rmq}
 }
 
 func (w *WorkerWrapper) Visit(url string) {
 	err := w.worker.Visit(url)
+
+	w.worker.OnHTML("title", func(e *colly.HTMLElement) {
+		text := e.Text
+		log.Infof("Find info %s", text)
+	})
+
 	if err != nil {
 		return
 	}
