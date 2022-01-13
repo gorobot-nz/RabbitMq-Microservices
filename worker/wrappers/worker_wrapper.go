@@ -6,7 +6,7 @@ import (
 )
 
 type WorkerWrapper struct {
-	collector *colly.Collector
+	worker *colly.Collector
 }
 
 func NewWorkerWrapper() *WorkerWrapper {
@@ -14,8 +14,15 @@ func NewWorkerWrapper() *WorkerWrapper {
 
 	c.OnHTML("title", func(e *colly.HTMLElement) {
 		text := e.Text
-		log.Infof("Find link %s", text)
+		log.Infof("Find info %s", text)
 	})
 
 	return &WorkerWrapper{c}
+}
+
+func (w *WorkerWrapper) Visit(url string) {
+	err := w.worker.Visit(url)
+	if err != nil {
+		return
+	}
 }
