@@ -1,6 +1,8 @@
 package main
 
-import "worker/wrappers"
+import (
+	"worker/wrappers"
+)
 
 func main() {
 	rabbitmq := wrappers.NewRabbitWorkerMQWrapper("amqp://guest:guest@localhost:5672/")
