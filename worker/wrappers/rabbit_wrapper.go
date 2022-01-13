@@ -32,12 +32,31 @@ func NewRabbitWorkerMQWrapper(url string) *RabbitMQWorkerWrapper {
 		transmitQueue}
 }
 
+func (rmq *RabbitMQWorkerWrapper) Listen(worker *WorkerWrapper) {
+	msgs, err := rmq.ReceiveChannel.Consume(
+		rmq.ReceiveQueue.Name, // queue
+		"",                    // consumer
+		true,                  // auto-ack
+		false,                 // exclusive
+		false,                 // no-local
+		false,                 // no-wait
+		nil,                   // args
+	)
+	failOnError(err, "Failed to register a consumer")
+
+	go func() {
+		for d := range msgs {
+			worker.Visit(string(d.Body))
+		}
+	}()
+}
+
 func (rmq *RabbitMQWorkerWrapper) Send(message string) {
 	err := rmq.TransmitChannel.Publish(
 		"",
 		rmq.TransmitQueue.Name,
-		false, // mandatory
-		false, // immediate
+		false,
+		false,
 		amqp.Publishing{
 			ContentType: "text/plain",
 			Body:        []byte(message),
