@@ -1,19 +1,19 @@
 package main
 
 import (
-	"fmt"
-	"github.com/gocolly/colly/v2"
+	"collector/wrapper"
+	"log"
 )
 
+func failOnError(err error, msg string) {
+	if err != nil {
+		log.Fatalf("%s: %s", msg, err)
+	}
+}
+
 func main() {
-	c := colly.NewCollector()
-
-	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
-		link := e.Attr("href")
-		fmt.Println(e.Request.AbsoluteURL(link))
-	})
-
-	err := c.Visit("https://go.dev/learn/")
+	collector := wrapper.NewWrapper()
+	err := collector.Run("https://go.dev/learn/")
 	if err != nil {
 		return
 	}
