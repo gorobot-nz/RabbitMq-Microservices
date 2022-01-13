@@ -1,7 +1,7 @@
 package main
 
 import (
-	"collector/wrapper"
+	"collector/wrappers"
 	"log"
 )
 
@@ -12,7 +12,7 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
-	collector := wrapper.NewWrapper()
+	collector := wrappers.NewCollectorWrapper()
 	err := collector.Run("https://go.dev/learn/")
 	if err != nil {
 		return

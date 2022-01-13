@@ -1,4 +1,4 @@
-package wrapper
+package wrappers
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ type CollectorWrapper struct {
 	collector *colly.Collector
 }
 
-func NewWrapper() *CollectorWrapper {
+func NewCollectorWrapper() *CollectorWrapper {
 	c := colly.NewCollector()
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
