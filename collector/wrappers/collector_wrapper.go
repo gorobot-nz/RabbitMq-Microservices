@@ -7,7 +7,6 @@ import (
 
 type CollectorWrapper struct {
 	collector *colly.Collector
-	rmq       *RabbitMQWrapper
 }
 
 func NewCollectorWrapper(rmq *RabbitMQWrapper) *CollectorWrapper {
@@ -18,7 +17,7 @@ func NewCollectorWrapper(rmq *RabbitMQWrapper) *CollectorWrapper {
 		rmq.Send(e.Request.AbsoluteURL(link))
 	})
 
-	return &CollectorWrapper{c, rmq}
+	return &CollectorWrapper{c}
 }
 
 func (w *CollectorWrapper) Run(url string) error {
