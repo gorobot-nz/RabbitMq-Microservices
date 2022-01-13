@@ -46,38 +46,30 @@ func NewElasticWrapper(cfg Config) *ElasticWrapper {
 	ctx := context.Background()
 	client, err := elastic.NewClient(elastic.SetBasicAuth(cfg.Username, cfg.Password))
 	if err != nil {
-		// Handle error
-		panic(err)
+		logrus.Fatalf("error %+v", err.Error())
 	}
 
-	// Ping the Elasticsearch server to get e.g. the version number
 	info, code, err := client.Ping(cfg.Host).Do(ctx)
 	if err != nil {
-		// Handle error
-		panic(err)
+		logrus.Fatalf("error %+v", err.Error())
 	}
 	fmt.Printf("Elasticsearch returned with code %d and version %s\n", code, info.Version.Number)
 
-	// Getting the ES version number is quite common, so there's a shortcut
 	esversion, err := client.ElasticsearchVersion(cfg.Host)
 	if err != nil {
-		// Handle error
 		logrus.Fatalf("error %+v", err.Error())
 	}
 	fmt.Printf("Elasticsearch version %s\n", esversion)
 
-	// Use the IndexExists service to check if a specified index exists.
 	exists, err := client.IndexExists(cfg.Index).Do(ctx)
 	if err != nil {
 		logrus.Fatalf("error %+v", err.Error())
 	}
 
 	if !exists {
-		// Create a new index.
 		_, err := client.CreateIndex(cfg.Index).BodyString(mapping).Do(ctx)
 		fmt.Println("Create")
 		if err != nil {
-			// Handle error
 			logrus.Fatalf("error %+v", err.Error())
 		}
 	}
