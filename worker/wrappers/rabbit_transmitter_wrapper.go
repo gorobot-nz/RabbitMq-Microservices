@@ -1,6 +1,9 @@
 package wrappers
 
-import "github.com/streadway/amqp"
+import (
+	log "github.com/sirupsen/logrus"
+	"github.com/streadway/amqp"
+)
 
 type RabbitMQTransmitterWorkerWrapper struct {
 	Connection      *amqp.Connection
@@ -23,5 +26,16 @@ func NewRabbitMQTransmitterWorkerWrapper(url string) *RabbitMQTransmitterWorkerW
 }
 
 func (rmq *RabbitMQTransmitterWorkerWrapper) Send(message string) {
-
+	err := rmq.TransmitChannel.Publish(
+		"",
+		rmq.TransmitQueue.Name,
+		false, // mandatory
+		false, // immediate
+		amqp.Publishing{
+			ContentType: "text/plain",
+			Body:        []byte(message),
+		})
+	if err != nil {
+		log.Fatal(err)
+	}
 }
