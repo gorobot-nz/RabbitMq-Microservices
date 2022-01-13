@@ -83,7 +83,7 @@ func NewElasticWrapper(cfg Config) *ElasticWrapper {
 	return &ElasticWrapper{client, cfg.Index}
 }
 
-func (e *ElasticWrapper) Save(title, url string) {
+func (e *ElasticWrapper) Save(url, title string) {
 	info := domain.Info{Url: url, Title: title}
 	ctx := context.Background()
 
