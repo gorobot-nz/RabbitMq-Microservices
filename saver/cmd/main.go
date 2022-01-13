@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/joho/godotenv"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"os"
@@ -29,6 +30,10 @@ func CheckEnvVars() {
 }
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("Env error: %s", err.Error())
+	}
+
 	err := InitConfig()
 	if err != nil {
 		log.Fatal("Config initial error")
@@ -42,7 +47,7 @@ func main() {
 		Index:    viper.GetString("index"),
 	}
 	es := wrappers.NewElasticWrapper(config)
-	rabbit := wrappers.NewRabbitMQSaverWrapper("amqp://guest:guest@localhost:5672/", es)
+	rabbit := wrappers.NewRabbitMQSaverWrapper(os.Getenv("RABBIT_HOST"), es)
 	rabbit.Listen()
 
 	forever := make(chan bool)
