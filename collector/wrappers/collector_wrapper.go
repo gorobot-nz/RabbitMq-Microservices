@@ -7,16 +7,17 @@ import (
 
 type CollectorWrapper struct {
 	collector *colly.Collector
+	rmq       *RabbitMQWrapper
 }
 
-func NewCollectorWrapper() *CollectorWrapper {
+func NewCollectorWrapper(rmq *RabbitMQWrapper) *CollectorWrapper {
 	c := colly.NewCollector()
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		fmt.Println(e.Request.AbsoluteURL(link))
 	})
 
-	return &CollectorWrapper{c}
+	return &CollectorWrapper{c, rmq}
 }
 
 func (w *CollectorWrapper) Run(url string) error {
