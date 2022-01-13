@@ -7,3 +7,21 @@ type RabbitMQTransmitterWorkerWrapper struct {
 	TransmitChannel *amqp.Channel
 	TransmitQueue   *amqp.Queue
 }
+
+func NewRabbitMQTransmitterWorkerWrapper(url string) *RabbitMQTransmitterWorkerWrapper {
+	conn, err := amqp.Dial(url)
+	failOnError(err, "Failed to declare a connection")
+	transmitChannel, err := InitChannel(conn)
+	failOnError(err, "Failed to declare a receive channel")
+	transmitQueue, err := InitQueue(transmitChannel, "tasks_results")
+	failOnError(err, "Failed to declare a receive queue")
+	return &RabbitMQTransmitterWorkerWrapper{
+		conn,
+		transmitChannel,
+		transmitQueue,
+	}
+}
+
+func (rmq *RabbitMQReceiverWorkerWrapper) Send(message string) {
+
+}
