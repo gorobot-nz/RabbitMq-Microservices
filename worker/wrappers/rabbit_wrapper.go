@@ -9,8 +9,8 @@ type RabbitMQWrapper struct {
 	Connection      *amqp.Connection
 	ReceiveChannel  *amqp.Channel
 	TransmitChannel *amqp.Channel
-	ReceiveQueue    amqp.Queue
-	TransmitQueue   amqp.Queue
+	ReceiveQueue    *amqp.Queue
+	TransmitQueue   *amqp.Queue
 }
 
 func NewRabbitMQWrapper(url string) *RabbitMQWrapper {
@@ -26,8 +26,8 @@ func NewRabbitMQWrapper(url string) *RabbitMQWrapper {
 		conn,
 		receiveChannel,
 		transmitChannel,
-		receiveQueue,
-		transmitQueue}
+		&receiveQueue,
+		&transmitQueue}
 }
 
 func InitChannel(connection *amqp.Connection) (*amqp.Channel, error) {
