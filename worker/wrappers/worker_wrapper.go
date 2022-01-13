@@ -23,12 +23,6 @@ func NewWorkerWrapper(rmq *RabbitMQTransmitterWorkerWrapper) *WorkerWrapper {
 
 func (w *WorkerWrapper) Visit(url string) {
 	err := w.worker.Visit(url)
-
-	w.worker.OnHTML("title", func(e *colly.HTMLElement) {
-		text := e.Text
-		log.Infof("Find info %s", text)
-	})
-
 	if err != nil {
 		return
 	}
