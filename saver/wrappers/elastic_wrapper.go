@@ -6,6 +6,7 @@ import (
 	"github.com/olivere/elastic"
 	"github.com/sirupsen/logrus"
 	"saver/domain"
+	"strings"
 )
 
 type Config struct {
@@ -83,8 +84,8 @@ func NewElasticWrapper(cfg Config) *ElasticWrapper {
 	return &ElasticWrapper{client, cfg.Index}
 }
 
-func (e *ElasticWrapper) Save(url, title string) {
-	info := domain.Info{Url: url, Title: title}
+func (e *ElasticWrapper) Save(body string) {
+	info := GetInfo(body)
 	ctx := context.Background()
 
 	_, err := e.client.Index().
@@ -93,5 +94,15 @@ func (e *ElasticWrapper) Save(url, title string) {
 		Do(ctx)
 	if err != nil {
 		return
+	}
+}
+
+func GetInfo(body string) *domain.Info {
+	splited := strings.Split(body, "\n")
+	url := splited[0][5:]
+	title := splited[1][7:]
+	return &domain.Info{
+		Url:   url,
+		Title: title,
 	}
 }

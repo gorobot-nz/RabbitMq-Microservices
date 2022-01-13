@@ -38,7 +38,7 @@ func (rmq *RabbitMQSaverWrapper) Listen() {
 
 	go func() {
 		for d := range msgs {
-			rmq.es.Save(string(d.Body), "")
+			rmq.es.Save(string(d.Body))
 		}
 	}()
 }
