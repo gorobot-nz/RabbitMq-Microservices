@@ -32,6 +32,21 @@ func NewRabbitWorkerMQWrapper(url string) *RabbitMQWorkerWrapper {
 		transmitQueue}
 }
 
+func (rmq *RabbitMQWorkerWrapper) Send(message string) {
+	err := rmq.TransmitChannel.Publish(
+		"",
+		rmq.TransmitQueue.Name,
+		false, // mandatory
+		false, // immediate
+		amqp.Publishing{
+			ContentType: "text/plain",
+			Body:        []byte(message),
+		})
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func failOnError(err error, msg string) {
 	if err != nil {
 		log.Fatalf("%s: %s", msg, err)

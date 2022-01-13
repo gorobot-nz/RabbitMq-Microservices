@@ -9,12 +9,13 @@ type WorkerWrapper struct {
 	worker *colly.Collector
 }
 
-func NewWorkerWrapper() *WorkerWrapper {
+func NewWorkerWrapper(rmq *RabbitMQWorkerWrapper) *WorkerWrapper {
 	c := colly.NewCollector()
 
 	c.OnHTML("title", func(e *colly.HTMLElement) {
 		text := e.Text
 		log.Infof("Find info %s", text)
+		rmq.Send(text)
 	})
 
 	return &WorkerWrapper{c}
