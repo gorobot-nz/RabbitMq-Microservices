@@ -9,7 +9,7 @@ type CollectorWrapper struct {
 	collector *colly.Collector
 }
 
-func NewCollectorWrapper(rmq *RabbitMQWrapper) *CollectorWrapper {
+func NewCollectorWrapper(rmq *RabbitMQCollectorWrapper) *CollectorWrapper {
 	collector := colly.NewCollector()
 	collector.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")

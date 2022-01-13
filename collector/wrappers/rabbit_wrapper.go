@@ -5,23 +5,23 @@ import (
 	"github.com/streadway/amqp"
 )
 
-type RabbitMQWrapper struct {
+type RabbitMQCollectorWrapper struct {
 	Connection *amqp.Connection
 	Channel    *amqp.Channel
 	Queue      *amqp.Queue
 }
 
-func NewRabbitMQWrapper(url string) *RabbitMQWrapper {
+func NewRabbitMQCollectorWrapper(url string) *RabbitMQCollectorWrapper {
 	conn, err := amqp.Dial(url)
 	failOnError(err, "Failed to declare a connection")
 	ch, err := InitChannel(conn)
 	failOnError(err, "Failed to declare a channel")
 	q, err := InitQueue(ch, "tasks")
 	failOnError(err, "Failed to declare a queue")
-	return &RabbitMQWrapper{conn, ch, q}
+	return &RabbitMQCollectorWrapper{conn, ch, q}
 }
 
-func (rmq *RabbitMQWrapper) Send(message string) {
+func (rmq *RabbitMQCollectorWrapper) Send(message string) {
 	err := rmq.Channel.Publish(
 		"",
 		rmq.Queue.Name,

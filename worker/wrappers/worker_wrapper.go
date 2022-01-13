@@ -5,17 +5,17 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type CollectorWrapper struct {
+type WorkerWrapper struct {
 	collector *colly.Collector
 }
 
-func NewCollectorWrapper() *CollectorWrapper {
+func NewWorkerWrapper() *WorkerWrapper {
 	c := colly.NewCollector()
 
-	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
-		link := e.Attr("href")
-		log.Infof("Find link %s", e.Request.AbsoluteURL(link))
+	c.OnHTML("title", func(e *colly.HTMLElement) {
+		text := e.Text
+		log.Infof("Find link %s", text)
 	})
 
-	return &CollectorWrapper{c}
+	return &WorkerWrapper{c}
 }
