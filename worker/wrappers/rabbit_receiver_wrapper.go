@@ -11,7 +11,7 @@ type RabbitMQReceiverWorkerWrapper struct {
 	worker         *WorkerWrapper
 }
 
-func NewRabbitWorkerMQWrapper(url string, worker *WorkerWrapper) *RabbitMQReceiverWorkerWrapper {
+func NewRabbitMQReceiverWorkerWrapper(url string, worker *WorkerWrapper) *RabbitMQReceiverWorkerWrapper {
 	conn, err := amqp.Dial(url)
 	failOnError(err, "Failed to declare a connection")
 	receiveChannel, err := InitChannel(conn)
@@ -26,7 +26,7 @@ func NewRabbitWorkerMQWrapper(url string, worker *WorkerWrapper) *RabbitMQReceiv
 	}
 }
 
-func (rmq *RabbitMQReceiverWorkerWrapper) Listen(worker *WorkerWrapper) {
+func (rmq *RabbitMQReceiverWorkerWrapper) Listen() {
 	msgs, err := rmq.ReceiveChannel.Consume(
 		rmq.ReceiveQueue.Name, // queue
 		"",                    // consumer
@@ -40,7 +40,7 @@ func (rmq *RabbitMQReceiverWorkerWrapper) Listen(worker *WorkerWrapper) {
 
 	go func() {
 		for d := range msgs {
-			worker.Visit(string(d.Body))
+			rmq.worker.Visit(string(d.Body))
 		}
 	}()
 }
