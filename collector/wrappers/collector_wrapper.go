@@ -10,14 +10,14 @@ type CollectorWrapper struct {
 }
 
 func NewCollectorWrapper(rmq *RabbitMQWrapper) *CollectorWrapper {
-	c := colly.NewCollector()
-	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
+	collector := colly.NewCollector()
+	collector.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		log.Infof("Find link %s", e.Request.AbsoluteURL(link))
 		rmq.Send(e.Request.AbsoluteURL(link))
 	})
 
-	return &CollectorWrapper{c}
+	return &CollectorWrapper{collector}
 }
 
 func (w *CollectorWrapper) Run(url string) error {

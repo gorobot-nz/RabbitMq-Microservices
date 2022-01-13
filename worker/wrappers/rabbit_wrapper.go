@@ -15,19 +15,27 @@ type RabbitMQWrapper struct {
 
 func NewRabbitMQWrapper(url string) *RabbitMQWrapper {
 	conn, err := amqp.Dial(url)
-	if err != nil {
-		log.Fatal(err)
-	}
+	failOnError(err, "Failed to declare a connection")
 	receiveChannel, err := InitChannel(conn)
+	failOnError(err, "Failed to declare a receive channel")
 	transmitChannel, err := InitChannel(conn)
+	failOnError(err, "Failed to declare a transmit channel")
 	receiveQueue, err := InitQueue(receiveChannel, "tasks")
+	failOnError(err, "Failed to declare a receive queue")
 	transmitQueue, err := InitQueue(receiveChannel, "tasks_result")
+	failOnError(err, "Failed to declare a transmit queue")
 	return &RabbitMQWrapper{
 		conn,
 		receiveChannel,
 		transmitChannel,
-		&receiveQueue,
-		&transmitQueue}
+		receiveQueue,
+		transmitQueue}
+}
+
+func failOnError(err error, msg string) {
+	if err != nil {
+		log.Fatalf("%s: %s", msg, err)
+	}
 }
 
 func InitChannel(connection *amqp.Connection) (*amqp.Channel, error) {
@@ -38,7 +46,7 @@ func InitChannel(connection *amqp.Connection) (*amqp.Channel, error) {
 	return ch, nil
 }
 
-func InitQueue(chanel *amqp.Channel, name string) (amqp.Queue, error) {
+func InitQueue(chanel *amqp.Channel, name string) (*amqp.Queue, error) {
 	q, err := chanel.QueueDeclare(
 		name,
 		false,
@@ -50,5 +58,5 @@ func InitQueue(chanel *amqp.Channel, name string) (amqp.Queue, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return q, nil
+	return &q, nil
 }
