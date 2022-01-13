@@ -22,6 +22,6 @@ func NewRabbitMQTransmitterWorkerWrapper(url string) *RabbitMQTransmitterWorkerW
 	}
 }
 
-func (rmq *RabbitMQReceiverWorkerWrapper) Send(message string) {
+func (rmq *RabbitMQTransmitterWorkerWrapper) Send(message string) {
 
 }
